@@ -1,0 +1,32 @@
+
+> customer-web@0.0.1 dev
+> vite --host 0.0.0.0
+
+
+  [32m[1mVITE[22m v6.4.2[39m  [2mready in [0m[1m645[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5181[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.60.131.19:[1m5181[22m/[39m
+[2m11:44:13 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/store.tsx, /src/styles/index.css[22m
+[2m11:44:29 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/app/store.tsx[22m Could not Fast Refresh ("formatVND" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m11:44:29 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/styles/index.css, /src/app/components/Layout.tsx, /src/app/pages/Auth.tsx, /src/app/pages/Cart.tsx, /src/app/pages/Rewards.tsx, /src/app/pages/Order.tsx, /src/app/pages/Profile.tsx, /src/app/components/ProductCard.tsx, /src/app/components/ProductModal.tsx[22m
+[2m11:44:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/store.tsx, /src/styles/index.css[22m
+[2m11:45:00 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/app/store.tsx[22m Could not Fast Refresh ("formatVND" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m11:45:00 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/App.tsx, /src/styles/index.css, /src/app/components/Layout.tsx, /src/app/pages/Auth.tsx, /src/app/pages/Cart.tsx, /src/app/pages/Rewards.tsx, /src/app/pages/Order.tsx, /src/app/pages/Profile.tsx, /src/app/components/ProductCard.tsx, /src/app/components/ProductModal.tsx[22m
+[2m11:45:26 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Auth.tsx, /src/styles/index.css[22m
+[2m11:45:54 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Profile.tsx, /src/styles/index.css[22m
+[2m11:46:22 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Profile.tsx, /src/styles/index.css[22m
+[2m11:48:35 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Profile.tsx, /src/styles/index.css[22m
+[2m11:51:56 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Profile.tsx, /src/styles/index.css[22m
+[2m11:52:34 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Profile.tsx, /src/styles/index.css[22m
+[2m11:52:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Profile.tsx, /src/styles/index.css[22m
+[2m11:53:49 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/components/Layout.tsx, /src/styles/index.css[22m
+[2m11:54:57 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Rewards.tsx, /src/styles/index.css[22m
+[2m11:57:32 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Profile.tsx, /src/styles/index.css[22m
+[2m12:11:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Home.tsx, /src/styles/index.css, /src/app/pages/ProductDetail.tsx, /src/app/pages/Menu.tsx[22m
+[2m12:14:35 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Home.tsx, /src/styles/index.css, /src/app/pages/ProductDetail.tsx, /src/app/pages/Menu.tsx[22m
+[2m12:14:51 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Home.tsx, /src/styles/index.css, /src/app/pages/ProductDetail.tsx, /src/app/pages/Menu.tsx[22m
+[2m12:15:07 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Home.tsx, /src/styles/index.css, /src/app/pages/ProductDetail.tsx, /src/app/pages/Menu.tsx[22m
+[2m12:15:59 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/pages/Home.tsx, /src/styles/index.css, /src/app/pages/ProductDetail.tsx, /src/app/pages/Menu.tsx[22m
+[2m12:16:40 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/components/ProductModal.tsx, /src/styles/index.css[22m
+[2m12:17:14 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/app/components/ProductModal.tsx, /src/styles/index.css[22m

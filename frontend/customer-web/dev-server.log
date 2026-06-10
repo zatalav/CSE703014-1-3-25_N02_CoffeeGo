@@ -1,0 +1,41 @@
+
+> customer-web@0.0.1 dev
+> vite --host 0.0.0.0
+
+
+  VITE v6.4.2  ready in 630 ms
+
+  ➜  Local:   http://localhost:5181/
+  ➜  Network: http://192.168.1.151:5181/
+5:27:59 PM [vite] (client) hmr update /src/app/pages/Home.tsx, /src/styles/index.css
+5:32:53 PM [vite] (client) hmr update /src/app/pages/Home.tsx, /src/styles/index.css
+1:48:38 PM [vite] (client) hmr update /src/app/store.tsx, /src/styles/index.css, /src/app/pages/Home.tsx, /src/app/pages/Stores.tsx, /src/app/components/ProductCard.tsx, /src/app/pages/Menu.tsx, /src/app/pages/News.tsx, /src/app/pages/Order.tsx, /src/app/components/ProductModal.tsx, /src/app/pages/Profile.tsx, /src/app/pages/ProductDetail.tsx, /src/app/pages/Rewards.tsx, /src/app/pages/Auth.tsx
+1:48:54 PM [vite] (client) hmr update /src/app/store.tsx, /src/styles/index.css
+1:49:13 PM [vite] (client) hmr update /src/app/pages/Auth.tsx, /src/styles/index.css
+1:49:27 PM [vite] (client) hmr update /src/app/pages/Profile.tsx, /src/styles/index.css
+1:49:45 PM [vite] (client) hmr update /src/app/pages/ProductDetail.tsx, /src/styles/index.css
+1:50:16 PM [vite] (client) hmr update /src/app/pages/Cart.tsx, /src/styles/index.css
+1:50:34 PM [vite] (client) hmr update /src/app/components/ProductCard.tsx, /src/styles/index.css
+1:50:54 PM [vite] (client) hmr update /src/app/pages/Menu.tsx, /src/styles/index.css
+1:51:22 PM [vite] (client) hmr update /src/app/pages/Order.tsx, /src/styles/index.css
+1:51:52 PM [vite] (client) hmr update /src/app/components/Layout.tsx, /src/styles/index.css
+1:52:14 PM [vite] (client) hmr update /src/app/pages/Home.tsx, /src/styles/index.css
+1:52:53 PM [vite] (client) hmr update /src/app/pages/Stores.tsx, /src/styles/index.css
+1:53:29 PM [vite] (client) hmr update /src/app/pages/Stores.tsx, /src/styles/index.css
+1:59:02 PM [vite] (client) hmr update /src/app/components/StoreLeafletMap.tsx, /src/styles/index.css
+1:59:13 PM [vite] (client) hmr update /src/app/pages/Rewards.tsx, /src/styles/index.css
+1:59:27 PM [vite] (client) hmr update /src/app/pages/Order.tsx, /src/styles/index.css
+1:59:41 PM [vite] (client) hmr update /src/app/pages/Order.tsx, /src/styles/index.css
+3:04:58 PM [vite] (client) hmr update /src/app/pages/Home.tsx, /src/styles/index.css, /src/app/pages/ProductDetail.tsx, /src/app/pages/Menu.tsx
+3:05:41 PM [vite] (client) hmr update /src/app/components/ProductModal.tsx, /src/styles/index.css
+3:05:49 PM [vite] (client) hmr update /src/app/components/ProductModal.tsx, /src/styles/index.css
+3:06:15 PM [vite] (client) hmr update /src/app/components/ProductModal.tsx, /src/styles/index.css
+3:06:24 PM [vite] (client) hmr update /src/app/components/ProductModal.tsx, /src/styles/index.css
+3:06:32 PM [vite] (client) hmr update /src/app/components/ProductModal.tsx, /src/styles/index.css
+3:06:45 PM [vite] (client) hmr update /src/app/components/ProductModal.tsx, /src/styles/index.css
+3:07:07 PM [vite] (client) hmr update /src/app/components/ProductModal.tsx, /src/styles/index.css
+3:07:14 PM [vite] (client) hmr update /src/app/store.tsx, /src/styles/index.css
+3:07:14 PM [vite] (client) hmr invalidate /src/app/store.tsx Could not Fast Refresh ("formatVND" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+3:07:14 PM [vite] (client) hmr update /src/app/App.tsx, /src/styles/index.css, /src/app/pages/Profile.tsx, /src/app/pages/Cart.tsx, /src/app/components/ProductCard.tsx, /src/app/pages/Rewards.tsx, /src/app/pages/Auth.tsx, /src/app/components/Layout.tsx, /src/app/pages/Order.tsx, /src/app/components/ProductModal.tsx
+3:07:34 PM [vite] (client) hmr update /src/app/pages/Order.tsx, /src/styles/index.css
+3:08:39 PM [vite] (client) hmr update /src/app/pages/Menu.tsx, /src/styles/index.css

@@ -1,0 +1,588 @@
+openapi: 3.0.3
+info:
+  title: CoffeeGo POS API
+  description: |
+    REST API cho hệ thống POS (Point of Sale) CoffeeGo dành cho nhân viên phục vụ.
+    Bao gồm: xác thực, menu, giỏ hàng & đơn hàng, thanh toán và khách hàng thành viên.
+  version: 1.0.0
+  contact:
+    name: CoffeeGo Engineering
+    email: engineering@coffeego.vn
+
+servers:
+  - url: https://api.coffeego.vn/v1
+    description: Production
+  - url: https://staging-api.coffeego.vn/v1
+    description: Staging
+  - url: http://localhost:3000/v1
+    description: Local dev
+
+tags:
+  - name: Auth
+    description: Đăng nhập / đăng xuất nhân viên
+  - name: Menu
+    description: Danh mục, sản phẩm, topping (UC8.1)
+  - name: Cart & Orders
+    description: Quản lý giỏ hàng & đơn hàng (UC8.2)
+  - name: Payments
+    description: Thanh toán đa phương thức — Cash / QR / Points (UC9)
+  - name: Customers
+    description: Khách hàng thành viên & điểm tích lũy
+
+paths:
+  # ─── AUTH ───────────────────────────────────────────────
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Đăng nhập nhân viên
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              demo:
+                value:
+                  emailOrPhone: nhanvien@coffeego.vn
+                  password: Coffee@123
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Đăng xuất
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204': { description: Đã đăng xuất }
+
+  # ─── MENU ───────────────────────────────────────────────
+  /menu/categories:
+    get:
+      tags: [Menu]
+      summary: Danh sách danh mục sản phẩm
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Category' }
+
+  /menu/products:
+    get:
+      tags: [Menu]
+      summary: Danh sách sản phẩm (lọc theo danh mục, tìm kiếm)
+      parameters:
+        - in: query
+          name: category
+          schema: { type: string, example: coffee }
+        - in: query
+          name: q
+          description: Từ khóa tìm kiếm tên sản phẩm
+          schema: { type: string }
+        - in: query
+          name: availableOnly
+          schema: { type: boolean, default: false }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Product' }
+
+  /menu/products/{productId}:
+    get:
+      tags: [Menu]
+      summary: Chi tiết một sản phẩm
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /menu/toppings:
+    get:
+      tags: [Menu]
+      summary: Danh sách topping khả dụng
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Topping' }
+
+  # ─── ORDERS ─────────────────────────────────────────────
+  /orders:
+    get:
+      tags: [Cart & Orders]
+      summary: Danh sách đơn hàng (hàng chờ bếp / lịch sử)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: status
+          schema: { $ref: '#/components/schemas/OrderStatus' }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+        - in: query
+          name: q
+          description: Tìm theo mã đơn / tên khách / SĐT / tên món
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Order' }
+
+    post:
+      tags: [Cart & Orders]
+      summary: Tạo đơn hàng mới (kèm thanh toán)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrderRequest' }
+      responses:
+        '201':
+          description: Đơn hàng đã được tạo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /orders/{orderId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      tags: [Cart & Orders]
+      summary: Chi tiết đơn hàng
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /orders/{orderId}/status:
+    patch:
+      tags: [Cart & Orders]
+      summary: Cập nhật trạng thái đơn hàng (pending → brewing → ready → done)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { $ref: '#/components/schemas/OrderStatus' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '409': { description: Chuyển trạng thái không hợp lệ }
+
+  /orders/{orderId}/cancel:
+    post:
+      tags: [Cart & Orders]
+      summary: Hủy đơn hàng (chỉ khi đang pending hoặc brewing)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  enum:
+                    - Khách đổi ý
+                    - Khách chờ quá lâu
+                    - Khách gọi nhầm món
+                    - Hết nguyên liệu
+                    - Lỗi hệ thống
+                    - Lý do khác
+                customReason: { type: string, description: Bắt buộc nếu reason = "Lý do khác" }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '409': { description: Không thể hủy ở trạng thái hiện tại }
+
+  # ─── PAYMENTS ───────────────────────────────────────────
+  /payments:
+    post:
+      tags: [Payments]
+      summary: Tạo giao dịch thanh toán cho đơn hàng
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CashPayment'
+                - $ref: '#/components/schemas/QrPayment'
+                - $ref: '#/components/schemas/PointsPayment'
+              discriminator:
+                propertyName: method
+      responses:
+        '200':
+          description: Thanh toán thành công
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaymentResult' }
+        '402': { description: Thanh toán thất bại (số tiền không đủ, hết hạn QR...) }
+
+  /payments/qr/{provider}:
+    post:
+      tags: [Payments]
+      summary: Sinh mã QR cho 1 đơn (VietQR/MoMo/ZaloPay/VNPay)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+            enum: [vietqr, momo, zalopay, vnpay]
+        - in: query
+          name: orderId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  qrPayload: { type: string, description: Chuỗi mã hóa để render QR }
+                  expiresAt: { type: string, format: date-time }
+
+  /payments/discount-codes/{code}:
+    get:
+      tags: [Payments]
+      summary: Kiểm tra & lấy giá trị mã giảm giá
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema: { type: string, example: COFFEE10 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code: { type: string }
+                  discountAmount: { type: integer, example: 10000 }
+        '404': { description: Mã không hợp lệ hoặc đã hết hạn }
+
+  # ─── CUSTOMERS ──────────────────────────────────────────
+  /customers/search:
+    get:
+      tags: [Customers]
+      summary: Tra cứu khách hàng (theo SĐT, tên, email)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema: { type: string, example: '0901234567' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Customer' }
+
+  /customers:
+    post:
+      tags: [Customers]
+      summary: Tạo khách hàng thành viên mới
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, phone]
+              properties:
+                name: { type: string }
+                phone: { type: string }
+                email: { type: string, format: email }
+      responses:
+        '201':
+          description: Tạo thành công
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Customer' }
+
+  /customers/{customerId}:
+    get:
+      tags: [Customers]
+      summary: Chi tiết khách hàng
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Customer' }
+
+# ─────────────────────────────────────────────────────────
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProductId:
+      in: path
+      name: productId
+      required: true
+      schema: { type: string, example: p1 }
+    OrderId:
+      in: path
+      name: orderId
+      required: true
+      schema: { type: string, example: order-1737000000000 }
+
+  responses:
+    BadRequest:
+      description: Dữ liệu gửi lên không hợp lệ
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Thiếu hoặc sai thông tin xác thực
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Không tìm thấy tài nguyên
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        code: { type: string, example: VALIDATION_ERROR }
+        message: { type: string, example: Trường 'phone' không hợp lệ }
+
+    LoginRequest:
+      type: object
+      required: [emailOrPhone, password]
+      properties:
+        emailOrPhone: { type: string, example: nhanvien@coffeego.vn }
+        password: { type: string, format: password, example: Coffee@123 }
+        rememberMe: { type: boolean, default: false }
+
+    LoginResponse:
+      type: object
+      properties:
+        token: { type: string, example: eyJhbGciOi... }
+        staff:
+          type: object
+          properties:
+            id: { type: string, example: staff-001 }
+            name: { type: string, example: Trần Minh Tú }
+            role: { type: string, example: cashier }
+            storeName: { type: string, example: CoffeeGo Quận 1 }
+
+    Category:
+      type: object
+      properties:
+        id: { type: string, example: coffee }
+        label: { type: string, example: Cà phê }
+        icon: { type: string, example: ☕ }
+
+    Product:
+      type: object
+      properties:
+        id: { type: string, example: p1 }
+        name: { type: string, example: Cà phê sữa đá }
+        price: { type: integer, example: 35000 }
+        category: { type: string, example: coffee }
+        emoji: { type: string, example: ☕ }
+        image: { type: string, format: uri, nullable: true }
+        available: { type: boolean }
+        sizes:
+          type: object
+          properties:
+            S: { type: integer, nullable: true }
+            M: { type: integer, nullable: true }
+            L: { type: integer, nullable: true }
+          example: { S: 35000, M: 40000, L: 45000 }
+
+    Topping:
+      type: object
+      properties:
+        id: { type: string, example: t1 }
+        name: { type: string, example: Trân châu đen }
+        price: { type: integer, example: 10000 }
+
+    OrderStatus:
+      type: string
+      enum: [pending, brewing, ready, done, cancelled]
+      description: |
+        - **pending**: Chờ xử lý
+        - **brewing**: Đang pha chế
+        - **ready**: Sẵn sàng giao khách
+        - **done**: Hoàn thành
+        - **cancelled**: Đã hủy
+
+    PaymentMethod:
+      type: string
+      enum: [cash, qr, points]
+
+    OrderItem:
+      type: object
+      properties:
+        name: { type: string }
+        qty: { type: integer, minimum: 1 }
+        size: { type: string, enum: [S, M, L] }
+        toppings:
+          type: array
+          items: { type: string, description: Topping id }
+        note: { type: string }
+        price: { type: integer, description: Giá đơn vị theo size }
+
+    Order:
+      type: object
+      properties:
+        id: { type: string }
+        orderNumber: { type: string, example: '001' }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OrderItem' }
+        total: { type: integer }
+        discount: { type: integer, default: 0 }
+        paymentMethod: { $ref: '#/components/schemas/PaymentMethod' }
+        customerName: { type: string }
+        customerPhone: { type: string }
+        note: { type: string }
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        staffName: { type: string }
+        cancelReason: { type: string, nullable: true }
+
+    CreateOrderRequest:
+      type: object
+      required: [items, paymentMethod]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/OrderItem' }
+        discountCode: { type: string, nullable: true, example: COFFEE10 }
+        paymentMethod: { $ref: '#/components/schemas/PaymentMethod' }
+        customerId: { type: string, nullable: true }
+        note: { type: string }
+
+    CashPayment:
+      type: object
+      required: [method, orderId, amountReceived]
+      properties:
+        method: { type: string, enum: [cash] }
+        orderId: { type: string }
+        amountReceived: { type: integer, example: 100000 }
+
+    QrPayment:
+      type: object
+      required: [method, orderId, provider]
+      properties:
+        method: { type: string, enum: [qr] }
+        orderId: { type: string }
+        provider:
+          type: string
+          enum: [vietqr, momo, zalopay, vnpay]
+        transactionRef: { type: string, description: Mã giao dịch trả về từ cổng }
+
+    PointsPayment:
+      type: object
+      required: [method, orderId, customerId, pointsUsed]
+      properties:
+        method: { type: string, enum: [points] }
+        orderId: { type: string }
+        customerId: { type: string }
+        pointsUsed: { type: integer, minimum: 0, description: '1 điểm = 1.000 VND' }
+
+    PaymentResult:
+      type: object
+      properties:
+        orderId: { type: string }
+        method: { $ref: '#/components/schemas/PaymentMethod' }
+        amountCharged: { type: integer }
+        change: { type: integer, description: Tiền thừa trả khách (cash) }
+        pointsEarned: { type: integer, description: Điểm cộng cho khách thành viên }
+        paidAt: { type: string, format: date-time }
+
+    Customer:
+      type: object
+      properties:
+        id: { type: string, example: c1 }
+        name: { type: string, example: Nguyễn Thị Lan }
+        phone: { type: string, example: '0901234567' }
+        email: { type: string, format: email }
+        points: { type: integer, example: 2450 }
+        rank:
+          type: string
+          enum: [Gold, Platinum, Black]
+        totalOrders: { type: integer }
+        lastOrder: { type: string, example: '20/05/2026' }

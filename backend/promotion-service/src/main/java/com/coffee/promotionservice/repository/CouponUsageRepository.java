@@ -1,0 +1,11 @@
+package com.coffee.promotionservice.repository;
+
+import com.coffee.promotionservice.entity.CouponUsage;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CouponUsageRepository extends JpaRepository<CouponUsage, Long>, JpaSpecificationExecutor<CouponUsage> {
+}

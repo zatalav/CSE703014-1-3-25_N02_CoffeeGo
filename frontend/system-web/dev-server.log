@@ -1,0 +1,44 @@
+
+> system-web@0.0.1 dev
+> vite --host 0.0.0.0
+
+
+  VITE v6.4.2  ready in 911 ms
+
+  ➜  Local:   http://localhost:5180/
+  ➜  Network: http://192.168.1.151:5180/
+10:16:28 PM [vite] (client) hmr update /@fs/D:\do_an_lien_nganh\do_an_lien_nganh\frontend\system-web\src\modules\ai\components\AiDataBanner.tsx, /src/styles/index.css
+1:46:06 PM [vite] (client) hmr update /src/app/App.tsx, /src/styles/index.css
+1:46:23 PM [vite] (client) hmr update /src/shared/layout/AdminLayout.tsx, /src/styles/index.css
+1:46:45 PM [vite] (client) hmr update /src/shared/layout/Topbar.tsx, /src/styles/index.css
+1:47:04 PM [vite] (client) hmr update /src/modules/dashboard/pages/Dashboard.tsx, /src/styles/index.css
+1:47:21 PM [vite] (client) hmr update /src/shared/layout/Sidebar.tsx, /src/styles/index.css
+1:47:44 PM [vite] (client) hmr update /src/app/auth-components/AuthLayout.tsx, /src/styles/index.css
+1:47:59 PM [vite] (client) hmr update /src/shared/layouts/WarehouseManagerLayout.tsx, /src/styles/index.css
+2:18:09 PM [vite] (client) hmr update /src/app/auth-components/Login.tsx, /src/styles/index.css
+2:18:39 PM [vite] (client) page reload src/app/auth-components/Register.tsx
+2:19:14 PM [vite] (client) hmr update /src/app/auth-components/ForgotPassword.tsx, /src/styles/index.css
+1:05:22 AM [vite] (client) hmr update /src/modules/dashboard/pages/Dashboard.tsx, /src/styles/index.css
+1:05:36 AM [vite] (client) hmr update /src/modules/dashboard/pages/Dashboard.tsx, /src/styles/index.css
+1:05:47 AM [vite] (client) hmr update /src/modules/dashboard/pages/Dashboard.tsx, /src/styles/index.css
+1:06:01 AM [vite] (client) hmr update /src/modules/dashboard/pages/Dashboard.tsx, /src/styles/index.css
+1:06:13 AM [vite] (client) hmr update /src/modules/reports/pages/RevenueReport.tsx, /src/styles/index.css
+1:06:24 AM [vite] (client) hmr update /src/modules/reports/pages/RevenueReport.tsx, /src/styles/index.css
+1:06:41 AM [vite] (client) hmr update /src/modules/reports/pages/OrderReport.tsx, /src/styles/index.css
+1:06:52 AM [vite] (client) hmr update /src/modules/reports/pages/OrderReport.tsx, /src/styles/index.css
+1:07:11 AM [vite] (client) hmr update /src/modules/reports/pages/InventoryReport.tsx, /src/styles/index.css
+1:07:36 AM [vite] (client) hmr update /src/modules/reports/pages/CustomerReport.tsx, /src/styles/index.css
+1:08:12 AM [vite] (client) hmr update /src/features/branch-reports/pages/BMReportsPage.tsx, /src/styles/index.css
+1:08:24 AM [vite] (client) hmr update /src/shared/layouts/WarehouseManagerLayout.tsx, /src/styles/index.css, /src/shared/layouts/BranchManagerLayout.tsx, /src/features/orders/pages/BMOrdersPage.tsx, /src/features/ingredients/pages/WMIngredientsPage.tsx, /src/features/branch-inventory/pages/BMInventoryPage.tsx, /src/features/warehouse-reports/pages/WMReportsPage.tsx, /src/features/staff/pages/BMStaffSchedulePage.tsx, /src/features/stock-movements/pages/WMStockInOutPage.tsx, /src/features/suppliers/pages/WMSuppliersPage.tsx, /src/modules/inventory/pages/WarehouseIO.tsx, /src/features/warehouse-dashboard/pages/WMDashboardPage.tsx, /src/features/branch-dashboard/pages/BMDashboardPage.tsx, /src/features/branch-reports/pages/BMReportsPage.tsx, /src/features/warehouse-map/pages/WMWarehouseMapPage.tsx
+1:08:58 AM [vite] (client) hmr update /src/features/warehouse-reports/pages/WMReportsPage.tsx, /src/styles/index.css
+2:07:43 AM [vite] (client) hmr update /src/modules/orders/pages/Orders.tsx, /src/styles/index.css
+2:07:49 AM [vite] (client) hmr update /src/modules/orders/pages/Orders.tsx, /src/styles/index.css
+2:08:01 AM [vite] (client) hmr update /src/modules/orders/pages/Orders.tsx, /src/styles/index.css
+2:08:10 AM [vite] (client) hmr update /src/modules/orders/pages/Orders.tsx, /src/styles/index.css
+2:08:47 AM [vite] (client) hmr update /src/modules/orders/pages/Orders.tsx, /src/styles/index.css
+2:09:33 AM [vite] (client) hmr update /src/modules/orders/pages/Orders.tsx, /src/styles/index.css
+2:11:07 AM [vite] (client) hmr update /src/modules/orders/pages/Orders.tsx, /src/styles/index.css
+2:23:57 AM [vite] (client) hmr update /src/modules/ai/pages/AIRevenueByItem.tsx, /src/styles/index.css
+2:24:32 AM [vite] (client) hmr update /src/modules/ai/pages/AIRevenueByItem.tsx, /src/styles/index.css
+2:24:41 AM [vite] (client) hmr update /src/modules/ai/pages/AIBCGMatrix.tsx, /src/styles/index.css
+2:25:05 AM [vite] (client) hmr update /src/modules/ai/pages/AIBCGMatrix.tsx, /src/styles/index.css
