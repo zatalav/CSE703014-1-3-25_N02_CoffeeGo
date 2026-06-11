@@ -27,8 +27,7 @@ public class ProductSchemaInitializer implements CommandLineRunner {
     private void backfillToppingPrices() {
         jdbcTemplate.update("""
                 UPDATE Ingredient i
-                JOIN Ingredient_category c ON c.i_category_id = i.i_category_id
-                SET i.topping_price = CASE
+                SET topping_price = CASE
                     WHEN LOWER(i.ingredient_name) LIKE '%kem cheese%'
                       OR LOWER(i.ingredient_name) LIKE '%cream cheese%'
                       OR LOWER(i.ingredient_name) LIKE '%foam%'
@@ -47,7 +46,9 @@ public class ProductSchemaInitializer implements CommandLineRunner {
                       OR LOWER(i.ingredient_name) LIKE '%caramel%' THEN 6000
                     ELSE 5000
                 END
+                FROM Ingredient_category c
                 WHERE LOWER(c.i_category_name) = 'topping'
+                  AND c.i_category_id = i.i_category_id
                   AND i.topping_price IS NULL
                 """);
     }
@@ -56,9 +57,9 @@ public class ProductSchemaInitializer implements CommandLineRunner {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME = ?
-                  AND COLUMN_NAME = ?
+                WHERE TABLE_SCHEMA = CURRENT_SCHEMA()
+                  AND LOWER(TABLE_NAME) = LOWER(?)
+                  AND LOWER(COLUMN_NAME) = LOWER(?)
                 """, Integer.class, tableName, columnName);
         if (count == null || count == 0) {
             jdbcTemplate.execute("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition);
@@ -68,10 +69,11 @@ public class ProductSchemaInitializer implements CommandLineRunner {
     private void deactivateFoodProductSizes() {
         jdbcTemplate.update("""
                 UPDATE Product_size ps
-                JOIN Product p ON p.product_id = ps.product_id
+                SET status = 'inactive'
+                FROM Product p
                 LEFT JOIN Product_category c ON c.p_category_id = p.p_category_id
-                SET ps.status = 'inactive'
                 WHERE COALESCE(LOWER(ps.status), '') <> 'inactive'
+                  AND p.product_id = ps.product_id
                   AND (
                     LOWER(COALESCE(p.product_type, '')) IN ('cake', 'bakery', 'pastry', 'snack', 'food')
                     OR LOWER(COALESCE(p.product_name, '')) LIKE '%banh%'

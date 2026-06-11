@@ -1,4 +1,4 @@
-package com.coffee.aiservice.service;
+﻿package com.coffee.aiservice.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,8 +99,9 @@ public class CustomerAssistantService {
                        p.base_price basePrice,
                        p.product_type productType,
                        pc.p_category_name categoryName,
-                       GROUP_CONCAT(DISTINCT CONCAT(ps.size, ':', COALESCE(ps.extra_price, 0)) ORDER BY ps.size SEPARATOR ', ') sizes,
-                       GROUP_CONCAT(DISTINCT i.ingredient_name ORDER BY i.ingredient_name SEPARATOR ', ') toppings
+                       STRING_AGG(DISTINCT CONCAT(ps.size, ':', COALESCE(ps.extra_price, 0)), ', '
+                                  ORDER BY CONCAT(ps.size, ':', COALESCE(ps.extra_price, 0))) sizes,
+                       STRING_AGG(DISTINCT i.ingredient_name, ', ' ORDER BY i.ingredient_name) toppings
                 FROM Product p
                 LEFT JOIN Product_category pc ON pc.p_category_id = p.p_category_id
                 LEFT JOIN Product_size ps ON ps.product_id = p.product_id AND (ps.status IS NULL OR LOWER(ps.status) = 'active')
@@ -123,8 +124,9 @@ public class CustomerAssistantService {
                        s.season_name seasonName,
                        s.start_date seasonStartDate,
                        s.end_date seasonEndDate,
-                       GROUP_CONCAT(DISTINCT CONCAT(ps.size, ':', COALESCE(ps.extra_price, 0)) ORDER BY ps.size SEPARATOR ', ') sizes,
-                       GROUP_CONCAT(DISTINCT i.ingredient_name ORDER BY i.ingredient_name SEPARATOR ', ') toppings
+                       STRING_AGG(DISTINCT CONCAT(ps.size, ':', COALESCE(ps.extra_price, 0)), ', '
+                                  ORDER BY CONCAT(ps.size, ':', COALESCE(ps.extra_price, 0))) sizes,
+                       STRING_AGG(DISTINCT i.ingredient_name, ', ' ORDER BY i.ingredient_name) toppings
                 FROM Product p
                 LEFT JOIN Seasonal_product sp ON sp.product_id = p.product_id
                 LEFT JOIN Season s ON s.season_id = sp.season_id
@@ -136,8 +138,8 @@ public class CustomerAssistantService {
                   AND (LOWER(COALESCE(p.product_type, '')) = 'seasonal' OR sp.product_id IS NOT NULL)
                   AND (s.season_id IS NULL OR (
                        (s.status IS NULL OR LOWER(s.status) = 'active')
-                       AND s.start_date <= CURRENT_DATE()
-                       AND s.end_date >= CURRENT_DATE()
+                       AND s.start_date <= CURRENT_DATE
+                       AND s.end_date >= CURRENT_DATE
                   ))
                 GROUP BY p.product_id, p.product_name, p.description, p.base_price, p.product_type,
                          pc.p_category_name, s.season_id, s.season_name, s.start_date, s.end_date
@@ -153,14 +155,14 @@ public class CustomerAssistantService {
                        c.start_date startDate,
                        c.end_date endDate,
                        c.status,
-                       GROUP_CONCAT(DISTINCT CONCAT(COALESCE(p.product_name, CONCAT('Product #', cd.product_id)), ' x', COALESCE(cd.quantity, 1))
-                                    ORDER BY p.product_name SEPARATOR ', ') items
+                       STRING_AGG(DISTINCT CONCAT(COALESCE(p.product_name, CONCAT('Product #', cd.product_id)), ' x', COALESCE(cd.quantity, 1)),
+                                  ', ' ORDER BY CONCAT(COALESCE(p.product_name, CONCAT('Product #', cd.product_id)), ' x', COALESCE(cd.quantity, 1))) items
                 FROM Combo c
                 LEFT JOIN Combo_detail cd ON cd.combo_id = c.combo_id
                 LEFT JOIN Product p ON p.product_id = cd.product_id
                 WHERE (c.status IS NULL OR LOWER(c.status) = 'active')
-                  AND (c.start_date IS NULL OR c.start_date <= CURRENT_DATE())
-                  AND (c.end_date IS NULL OR c.end_date >= CURRENT_DATE())
+                  AND (c.start_date IS NULL OR c.start_date <= CURRENT_DATE)
+                  AND (c.end_date IS NULL OR c.end_date >= CURRENT_DATE)
                 GROUP BY c.combo_id, c.combo_name, c.description, c.category, c.price, c.start_date, c.end_date, c.status
                 ORDER BY c.start_date DESC, c.combo_name
                 LIMIT ?
@@ -196,8 +198,8 @@ public class CustomerAssistantService {
                        status
                 FROM Coupon
                 WHERE (status IS NULL OR LOWER(status) = 'active')
-                  AND (start_date IS NULL OR start_date <= CURRENT_DATE())
-                  AND (end_date IS NULL OR end_date >= CURRENT_DATE())
+                  AND (start_date IS NULL OR start_date <= CURRENT_DATE)
+                  AND (end_date IS NULL OR end_date >= CURRENT_DATE)
                   AND (usage_limit IS NULL OR used_count IS NULL OR used_count < usage_limit)
                 ORDER BY end_date ASC, coupon_id DESC
                 LIMIT ?

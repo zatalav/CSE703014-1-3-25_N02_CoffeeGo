@@ -1,4 +1,4 @@
-package com.coffee.aiservice.service;
+﻿package com.coffee.aiservice.service;
 
 import com.coffee.common.security.AuthenticatedUser;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -195,9 +195,9 @@ public class RoleAssistantService {
 
     private void addSystemMetrics(Map<String, Object> snapshot) {
         Map<String, Object> metrics = new LinkedHashMap<>();
-        putScalar(metrics, "todayOrders", "SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) = CURRENT_DATE()");
-        putScalar(metrics, "todayRevenue", "SELECT COALESCE(SUM(amount),0) FROM Payment WHERE DATE(paid_at) = CURRENT_DATE() AND status = 'paid'");
-        putScalar(metrics, "cancelledToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) = CURRENT_DATE() AND status = 'cancelled'");
+        putScalar(metrics, "todayOrders", "SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) = CURRENT_DATE");
+        putScalar(metrics, "todayRevenue", "SELECT COALESCE(SUM(amount),0) FROM Payment WHERE DATE(paid_at) = CURRENT_DATE AND status = 'paid'");
+        putScalar(metrics, "cancelledToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) = CURRENT_DATE AND status = 'cancelled'");
         putScalar(metrics, "pendingOrders", "SELECT COUNT(*) FROM Order_ WHERE status = 'pending'");
         putScalar(metrics, "readyOrders", "SELECT COUNT(*) FROM Order_ WHERE status = 'ready'");
         putScalar(metrics, "deliveringOrders", "SELECT COUNT(*) FROM Order_ WHERE status = 'delivering'");
@@ -207,17 +207,17 @@ public class RoleAssistantService {
 
     private void addBranchOrderMetrics(Map<String, Object> snapshot, Long branchId) {
         Map<String, Object> metrics = new LinkedHashMap<>();
-        putScalar(metrics, "ordersToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) = CURRENT_DATE() AND branch_id = ?", branchId);
+        putScalar(metrics, "ordersToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) = CURRENT_DATE AND branch_id = ?", branchId);
         putScalar(metrics, "revenueToday", """
                 SELECT COALESCE(SUM(p.amount),0)
                 FROM Payment p JOIN Order_ o ON o.order_id = p.order_id
-                WHERE DATE(p.paid_at) = CURRENT_DATE() AND p.status = 'paid' AND o.branch_id = ?
+                WHERE DATE(p.paid_at) = CURRENT_DATE AND p.status = 'paid' AND o.branch_id = ?
                 """, branchId);
         putScalar(metrics, "pendingOrders", "SELECT COUNT(*) FROM Order_ WHERE status = 'pending' AND branch_id = ?", branchId);
         putScalar(metrics, "preparingOrders", "SELECT COUNT(*) FROM Order_ WHERE status = 'preparing' AND branch_id = ?", branchId);
         putScalar(metrics, "readyOrders", "SELECT COUNT(*) FROM Order_ WHERE status = 'ready' AND branch_id = ?", branchId);
-        putScalar(metrics, "completedToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(updated_at) = CURRENT_DATE() AND status = 'completed' AND branch_id = ?", branchId);
-        putScalar(metrics, "cancelledToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(updated_at) = CURRENT_DATE() AND status = 'cancelled' AND branch_id = ?", branchId);
+        putScalar(metrics, "completedToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(updated_at) = CURRENT_DATE AND status = 'completed' AND branch_id = ?", branchId);
+        putScalar(metrics, "cancelledToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(updated_at) = CURRENT_DATE AND status = 'cancelled' AND branch_id = ?", branchId);
         snapshot.put("orderMetrics", metrics);
     }
 
@@ -228,8 +228,8 @@ public class RoleAssistantService {
         putScalar(metrics, "stockItems", "SELECT COUNT(*) FROM Warehouse_stock" + branchFilter, args);
         putScalar(metrics, "lowStockItems", "SELECT COUNT(*) FROM Warehouse_stock WHERE quantity < min_quantity" + branchAnd(branchId), args);
         putScalar(metrics, "outOfStockItems", "SELECT COUNT(*) FROM Warehouse_stock WHERE quantity <= 0" + branchAnd(branchId), args);
-        putScalar(metrics, "importsToday", "SELECT COUNT(*) FROM Stock_import WHERE DATE(imported_at) = CURRENT_DATE()" + branchAnd(branchId), args);
-        putScalar(metrics, "exportsToday", "SELECT COUNT(*) FROM Stock_export WHERE DATE(exported_at) = CURRENT_DATE()" + fromBranchAnd(branchId), args);
+        putScalar(metrics, "importsToday", "SELECT COUNT(*) FROM Stock_import WHERE DATE(imported_at) = CURRENT_DATE" + branchAnd(branchId), args);
+        putScalar(metrics, "exportsToday", "SELECT COUNT(*) FROM Stock_export WHERE DATE(exported_at) = CURRENT_DATE" + fromBranchAnd(branchId), args);
         snapshot.put("warehouseMetrics", metrics);
     }
 
@@ -237,7 +237,7 @@ public class RoleAssistantService {
         Map<String, Object> metrics = new LinkedHashMap<>();
         putScalar(metrics, "readyForDelivery", "SELECT COUNT(*) FROM Order_ WHERE status = 'ready' AND order_type = 'delivery' AND branch_id = ?", branchId);
         putScalar(metrics, "delivering", "SELECT COUNT(*) FROM Order_ WHERE status = 'delivering' AND branch_id = ?", branchId);
-        putScalar(metrics, "completedToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(updated_at) = CURRENT_DATE() AND status = 'completed' AND order_type = 'delivery' AND branch_id = ?", branchId);
+        putScalar(metrics, "completedToday", "SELECT COUNT(*) FROM Order_ WHERE DATE(updated_at) = CURRENT_DATE AND status = 'completed' AND order_type = 'delivery' AND branch_id = ?", branchId);
         snapshot.put("deliveryMetrics", metrics);
     }
 
@@ -289,7 +289,7 @@ public class RoleAssistantService {
                 FROM Order_detail d
                 JOIN Order_ o ON o.order_id = d.order_id
                 LEFT JOIN Product p ON p.product_id = d.product_id
-                WHERE DATE(o.created_at) = CURRENT_DATE()
+                WHERE DATE(o.created_at) = CURRENT_DATE
                 """ + branchAnd("o", branchId) + """
                 GROUP BY d.product_id, p.product_name
                 ORDER BY quantity DESC

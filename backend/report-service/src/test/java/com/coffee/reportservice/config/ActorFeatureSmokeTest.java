@@ -1,4 +1,4 @@
-package com.coffee.reportservice.config;
+﻿package com.coffee.reportservice.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -550,7 +550,7 @@ class ActorFeatureSmokeTest {
 
     private JdbcTemplate jdbcTemplate() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setDriverClassName("org.postgresql.Driver");
         dataSource.setUrl(System.getenv("DB_URL"));
         dataSource.setUsername(System.getenv("DB_USERNAME"));
         dataSource.setPassword(System.getenv("DB_PASSWORD"));

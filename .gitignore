@@ -9,6 +9,7 @@ frontend/**/dist/
 frontend/**/.vite/
 frontend/**/logs/
 backend/logs/
+.tmp/
 .env
 **/.env
 

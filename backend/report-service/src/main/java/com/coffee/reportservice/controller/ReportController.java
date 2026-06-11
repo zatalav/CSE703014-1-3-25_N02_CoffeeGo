@@ -1,4 +1,4 @@
-package com.coffee.reportservice.controller;
+﻿package com.coffee.reportservice.controller;
 
 import com.coffee.common.exception.BadRequestException;
 import com.coffee.common.response.ApiResponse;
@@ -384,7 +384,7 @@ public class ReportController {
             ));
         }
 
-        long pendingOrders = scalarLong("SELECT COUNT(*) FROM Order_ WHERE status IN ('pending','confirmed','preparing') AND created_at < NOW() - INTERVAL 45 MINUTE", List.of());
+        long pendingOrders = scalarLong("SELECT COUNT(*) FROM Order_ WHERE status IN ('pending','confirmed','preparing') AND created_at < NOW() - INTERVAL '45 minutes'", List.of());
         if (pendingOrders > 0) {
             warnings.add(map("type", "warning", "msg", pendingOrders + " đơn đang xử lý quá 45 phút", "time", "Hôm nay"));
         }
@@ -487,15 +487,15 @@ public class ReportController {
 
     private List<Map<String, Object>> hourRevenue(DateRange range, Long branchId) {
         return jdbcTemplate.queryForList("""
-                SELECT CONCAT(LPAD(HOUR(COALESCE(p.paid_at, o.created_at)),2,'0'), 'h') hour,
+                SELECT CONCAT(LPAD((EXTRACT(HOUR FROM COALESCE(p.paid_at, o.created_at))::int)::text, 2, '0'), 'h') hour,
                        COALESCE(SUM(CASE WHEN p.status = 'paid' THEN p.amount ELSE 0 END),0) revenue
                 FROM Order_ o
                 LEFT JOIN Payment p ON p.order_id = o.order_id
                 WHERE o.status = 'completed'
                   AND DATE(COALESCE(p.paid_at, o.created_at)) BETWEEN ? AND ?
                 """ + branchClause(branchId, "o.branch_id") + """
-                GROUP BY HOUR(COALESCE(p.paid_at, o.created_at))
-                ORDER BY HOUR(COALESCE(p.paid_at, o.created_at))
+                GROUP BY EXTRACT(HOUR FROM COALESCE(p.paid_at, o.created_at))
+                ORDER BY EXTRACT(HOUR FROM COALESCE(p.paid_at, o.created_at))
                 """, args(range, branchId).toArray());
     }
 
@@ -652,12 +652,12 @@ public class ReportController {
 
     private List<Map<String, Object>> hourlyOrders(DateRange range, Long branchId) {
         return jdbcTemplate.queryForList("""
-                SELECT CONCAT(LPAD(HOUR(created_at),2,'0'), 'h') hour, COUNT(*) orders
+                SELECT CONCAT(LPAD((EXTRACT(HOUR FROM created_at)::int)::text, 2, '0'), 'h') hour, COUNT(*) orders
                 FROM Order_
                 WHERE DATE(created_at) BETWEEN ? AND ?
                 """ + branchClause(branchId, "branch_id") + """
-                GROUP BY HOUR(created_at)
-                ORDER BY HOUR(created_at)
+                GROUP BY EXTRACT(HOUR FROM created_at)
+                ORDER BY EXTRACT(HOUR FROM created_at)
                 """, args(range, branchId).toArray());
     }
 
@@ -717,7 +717,7 @@ public class ReportController {
     private List<Map<String, Object>> customerGrowth() {
         LocalDate start = LocalDate.now().withDayOfMonth(1).minusMonths(5);
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("""
-                SELECT DATE_FORMAT(created_at, '%Y-%m') monthKey, COUNT(*) customers
+                SELECT TO_CHAR(created_at, 'YYYY-MM') monthKey, COUNT(*) customers
                 FROM Customer
                 WHERE created_at IS NOT NULL AND DATE(created_at) >= ?
                 GROUP BY monthKey

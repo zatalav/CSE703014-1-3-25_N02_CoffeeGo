@@ -1,4 +1,4 @@
-# Coffee Chain Management Backend
+﻿# Coffee Chain Management Backend
 
     This folder contains a Spring Boot 3.x Maven multi-module backend for the existing Admin React frontend.
 
@@ -34,8 +34,8 @@
 
     ## Database
 
-    The repository no longer stores SQL dump/migration files. Create or import the MySQL database
-    `do_an_lien_nganh` directly in MySQL, then configure each service through its
+    The repository no longer stores SQL dump/migration files. Create or import the PostgreSQL database
+    `do_an_lien_nganh` directly in PostgreSQL, then configure each service through its
     `src/main/resources/application.properties` file.
 
     No existing table names are renamed. JPA entities use the existing table and column names.

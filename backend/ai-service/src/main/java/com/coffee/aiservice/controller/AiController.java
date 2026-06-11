@@ -1,4 +1,4 @@
-package com.coffee.aiservice.controller;
+﻿package com.coffee.aiservice.controller;
 
 import com.coffee.common.response.ApiResponse;
 import java.sql.Date;
@@ -40,7 +40,7 @@ public class AiController {
         return ApiResponse.success(map(
                 "message", dataReadiness(),
                 "confidenceScore", confidenceScore(),
-                "ordersLast30Days", scalarLong("SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) >= CURRENT_DATE() - INTERVAL 30 DAY", List.of()),
+                "ordersLast30Days", scalarLong("SELECT COUNT(*) FROM Order_ WHERE DATE(created_at) >= CURRENT_DATE - INTERVAL '30 days'", List.of()),
                 "lowStockItems", scalarLong("SELECT COUNT(*) FROM Warehouse_stock WHERE quantity < min_quantity", List.of())
         ));
     }
@@ -112,7 +112,7 @@ public class AiController {
         long cancelledToday = scalarLong("""
                 SELECT COUNT(*)
                 FROM Order_
-                WHERE status = 'cancelled' AND DATE(created_at) = CURRENT_DATE()
+                WHERE status = 'cancelled' AND DATE(created_at) = CURRENT_DATE
                 """ + branchClause(branchId, "branch_id"), branchOnlyArgs(branchId));
         double avgCancelled = doubleValue(jdbcTemplate.queryForObject("""
                 SELECT COALESCE(AVG(daily_count),0)
@@ -120,7 +120,7 @@ public class AiController {
                     SELECT DATE(created_at) day, COUNT(*) daily_count
                     FROM Order_
                     WHERE status = 'cancelled'
-                      AND DATE(created_at) BETWEEN CURRENT_DATE() - INTERVAL 7 DAY AND CURRENT_DATE() - INTERVAL 1 DAY
+                      AND DATE(created_at) BETWEEN CURRENT_DATE - INTERVAL '7 days' AND CURRENT_DATE - INTERVAL '1 day'
                 """ + branchClause(branchId, "branch_id") + """
                     GROUP BY DATE(created_at)
                 ) t
@@ -141,7 +141,7 @@ public class AiController {
                 SELECT COUNT(*)
                 FROM Order_
                 WHERE status IN ('pending','confirmed','preparing')
-                  AND created_at < NOW() - INTERVAL 45 MINUTE
+                  AND created_at < NOW() - INTERVAL '45 minutes'
                 """ + branchClause(branchId, "branch_id"), branchOnlyArgs(branchId));
         if (oldPending > 0) {
             anomalies.add(map(
@@ -196,7 +196,7 @@ public class AiController {
                        COUNT(*) orders,
                        COALESCE(SUM(CASE WHEN p.status = 'paid' THEN p.amount ELSE 0 END),0) spend,
                        MAX(o.created_at) lastOrder,
-                       DATEDIFF(CURRENT_DATE(), DATE(MIN(o.created_at))) activeDays
+                       (CURRENT_DATE - DATE(MIN(o.created_at))) activeDays
                 FROM Order_ o
                 LEFT JOIN Payment p ON p.order_id = o.order_id
                 LEFT JOIN Customer c ON c.id = o.customer_id
@@ -349,7 +349,7 @@ public class AiController {
                        COALESCE(SUM(CASE WHEN p.status = 'paid' THEN p.amount ELSE 0 END),0) revenue
                 FROM Order_ o
                 LEFT JOIN Payment p ON p.order_id = o.order_id
-                WHERE DATE(o.created_at) BETWEEN CURRENT_DATE() - INTERVAL 13 DAY AND CURRENT_DATE()
+                WHERE DATE(o.created_at) BETWEEN CURRENT_DATE - INTERVAL '13 days' AND CURRENT_DATE
                 """ + branchClause(branchId, "o.branch_id") + """
                 GROUP BY day
                 ORDER BY day
@@ -369,7 +369,7 @@ public class AiController {
                 JOIN Order_ o ON o.order_id = od.order_id
                 LEFT JOIN Product p ON p.product_id = od.product_id
                 LEFT JOIN Combo c ON c.combo_id = od.combo_id
-                WHERE DATE(o.created_at) BETWEEN CURRENT_DATE() - INTERVAL 13 DAY AND CURRENT_DATE()
+                WHERE DATE(o.created_at) BETWEEN CURRENT_DATE - INTERVAL '13 days' AND CURRENT_DATE
                 """ + branchClause(branchId, "o.branch_id") + """
                 GROUP BY day, name
                 ORDER BY day
@@ -409,11 +409,11 @@ public class AiController {
 
     private List<Map<String, Object>> heatmap(Long branchId) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("""
-                SELECT WEEKDAY(created_at) dayIdx,
-                       FLOOR(HOUR(created_at) / 2) * 2 hourBucket,
+                SELECT (EXTRACT(ISODOW FROM created_at)::int - 1) dayIdx,
+                       (FLOOR(EXTRACT(HOUR FROM created_at) / 2) * 2)::int hourBucket,
                        COUNT(*) value
                 FROM Order_
-                WHERE DATE(created_at) BETWEEN CURRENT_DATE() - INTERVAL 30 DAY AND CURRENT_DATE()
+                WHERE DATE(created_at) BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE
                 """ + branchClause(branchId, "branch_id") + """
                 GROUP BY dayIdx, hourBucket
                 """, branchOnlyArgs(branchId).toArray());
@@ -438,7 +438,7 @@ public class AiController {
                 LEFT JOIN Branch b ON b.branch_id = o.branch_id
                 LEFT JOIN Product p ON p.product_id = od.product_id
                 LEFT JOIN Combo c ON c.combo_id = od.combo_id
-                WHERE DATE(o.created_at) BETWEEN CURRENT_DATE() - INTERVAL 30 DAY AND CURRENT_DATE()
+                WHERE DATE(o.created_at) BETWEEN CURRENT_DATE - INTERVAL '30 days' AND CURRENT_DATE
                 GROUP BY branch, name
                 """);
         List<Map<String, Object>> result = branchRows.stream()
@@ -469,7 +469,7 @@ public class AiController {
                 LEFT JOIN Customer c ON c.id = o.customer_id
                 WHERE o.customer_id IS NOT NULL
                 GROUP BY o.customer_id, c.name
-                HAVING DATE(lastOrder) < CURRENT_DATE() - INTERVAL 21 DAY
+                HAVING DATE(MAX(o.created_at)) < CURRENT_DATE - INTERVAL '21 days'
                 ORDER BY spend DESC
                 LIMIT 10
                 """).stream()

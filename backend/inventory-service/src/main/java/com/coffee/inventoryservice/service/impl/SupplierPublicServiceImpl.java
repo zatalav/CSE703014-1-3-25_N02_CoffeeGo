@@ -72,7 +72,7 @@ public class SupplierPublicServiceImpl implements SupplierPublicService {
     @Transactional
     public SupplierFormResponse setStatus(Long id, String status) {
         Supplier supplier = findSupplier(id);
-        supplier.setStatus(status);
+        supplier.setStatus(normalizeStatus(status));
         return toResponse(supplierRepository.save(supplier));
     }
 
@@ -94,7 +94,7 @@ public class SupplierPublicServiceImpl implements SupplierPublicService {
     private void applySupplier(Supplier supplier, SupplierFormRequest request) {
         supplier.setSupplierName(request.getSupplierName());
         supplier.setAddress(request.getAddress());
-        supplier.setStatus(blankToDefault(request.getStatus(), "active"));
+        supplier.setStatus(normalizeStatus(request.getStatus()));
         supplier.setUrlImg(request.getUrlImg());
         supplier.setDescription(writeMeta(request));
     }
@@ -177,6 +177,14 @@ public class SupplierPublicServiceImpl implements SupplierPublicService {
 
     private String blankToDefault(String value, String fallback) {
         return value == null || value.isBlank() ? fallback : value;
+    }
+
+    private String normalizeStatus(String status) {
+        String normalized = blankToDefault(status, "active").trim().toLowerCase();
+        if ("hidden".equals(normalized)) {
+            return "inactive";
+        }
+        return normalized;
     }
 
     public static class SupplierMeta {
